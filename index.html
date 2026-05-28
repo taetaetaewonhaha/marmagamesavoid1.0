@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오브젝트 피하기: 네온 바운스 에디션</title>
+    <title>오브젝트 피하기: 네온 바운스 이지 에디션</title>
     <style>
         body { margin: 0; background-color: #0b0b0e; color: #fff; font-family: 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
         #gameWrapper { position: relative; width: 1200px; height: 800px; }
@@ -55,7 +55,7 @@
     </div>
     
     <div class="info-panel">
-        <span><b>목표:</b> 50초 생존 | <b>F 필살기:</b> 상점에서 확장 시 판당 지정 횟수만큼 <span style="color:#00ffff; font-weight:bold;">[F] 키</span>로 광역 삭제 (범위 상향🔥)</span>
+        <span><b>이지 에디션:</b> 버그 수정 완료 | 50초 안정 생존 지원</span>
     </div>
     
     <div id="gameWrapper">
@@ -67,7 +67,7 @@
             <div class="shop-container">
                 <div class="shop-item">
                     <h3>⚡ 대시 종합 강화</h3>
-                    <p>대시 속도가 증가하며,<br>Lv.3(4칸), Lv.5(5칸)로 확장됩니다.<br><span id="dashLevelText" style="color:#00ffcc">Lv.0 / 5</span></p>
+                    <p>대시 속도가 증가하며,<br>Lv.3(5칸), Lv.5(6칸)로 확장됩니다.<br><span id="dashLevelText" style="color:#00ffcc">Lv.0 / 5</span></p>
                     <button class="shop-btn" id="buyDashBtn">비용: 35 🪙</button>
                 </div>
                 <div class="shop-item">
@@ -103,9 +103,7 @@
                 const start = genTime();
                 debugger;
                 const end = genTime();
-                if (end - start > 100) {
-                    window.location.reload();
-                }
+                if (end - start > 100) { window.location.reload(); }
             }
             function genTime() { return new Date().getTime(); }
             setInterval(detectDevTools, 500);
@@ -135,16 +133,16 @@
 
             const player = {
                 x: canvas.width / 2, y: canvas.height / 2, radius: 12,
-                baseSpeed: 4.4, speed: 4.4, color: '#00ffcc', hp: 3,
+                baseSpeed: 5.2, speed: 5.2, color: '#00ffcc', hp: 3,
                 isDashing: false, dashTimer: 0, dashDuration: 10,
-                baseDashSpeed: 16, dashSpeed: 16, maxDashCount: 3, dashCount: 3,
+                baseDashSpeed: 16, dashSpeed: 16, maxDashCount: 4, dashCount: 4,
                 lastDx: 1, lastDy: 0, isInvincible: false, invincibleTimer: 0,
                 dashHistory: [], remainingFSkills: 0
             };
 
             let enemies = [];
             let lasers = [];
-            let enemySpawnInterval = 480;
+            let enemySpawnInterval = 560;
             let lastSpawnTime = genTime();
             let lastLaserTime = genTime();
 
@@ -189,9 +187,9 @@
                 let speedBonus = 1 + (upgrades.speed * 0.10);
                 player.speed = player.baseSpeed * speedBonus;
                 player.dashSpeed = player.baseDashSpeed + (upgrades.dash * 2.5);
-                if (upgrades.dash >= 5) player.maxDashCount = 5;
-                else if (upgrades.dash >= 3) player.maxDashCount = 4;
-                else player.maxDashCount = 3;
+                if (upgrades.dash >= 5) player.maxDashCount = 6;
+                else if (upgrades.dash >= 3) player.maxDashCount = 5;
+                else player.maxDashCount = 4;
                 player.dashCount = player.maxDashCount;
                 player.remainingFSkills = upgrades.fSkill;
             }
@@ -227,7 +225,7 @@
                 document.querySelectorAll('.current-coins').forEach(el => el.innerText = totalCoins);
                 coinDisplay.innerText = totalCoins;
                 const nextDashCost = upgradeCosts.dash[upgrades.dash] || 0;
-                document.getElementById('dashLevelText').innerText = `Lv.${upgrades.dash} / 5 (최대 ${upgrades.dash >= 5 ? 5 : (upgrades.dash >= 3 ? 4 : 3)}칸)`;
+                document.getElementById('dashLevelText').innerText = `Lv.${upgrades.dash} / 5 (최대 ${upgrades.dash >= 5 ? 6 : (upgrades.dash >= 3 ? 5 : 4)}칸)`;
                 document.getElementById('buyDashBtn').disabled = upgrades.dash >= 5 || totalCoins < nextDashCost;
                 document.getElementById('buyDashBtn').innerText = upgrades.dash >= 5 ? "MAX" : `비용: ${nextDashCost} 🪙`;
                 const nextSpeedCost = upgradeCosts.speed[upgrades.speed] || 0;
@@ -280,15 +278,15 @@
                 const typeRand = Math.random();
                 let type = 'normal';
                 if (currentPhase === 1) { type = typeRand < 0.5 ? 'normal' : 'homing'; }
-                else if (currentPhase === 2) { type = typeRand < 0.3 ? 'normal' : (typeRand < 0.7 ? 'homing' : 'giant'); }
-                else { type = typeRand < 0.2 ? 'normal' : (typeRand < 0.4 ? 'homing' : (typeRand < 0.6 ? 'giant' : 'bounce')); }
-                let size = Math.random() * 6 + 10;
+                else if (currentPhase === 2) { type = typeRand < 0.4 ? 'normal' : (typeRand < 0.8 ? 'homing' : 'giant'); }
+                else { type = typeRand < 0.3 ? 'normal' : (typeRand < 0.5 ? 'homing' : (typeRand < 0.7 ? 'giant' : 'bounce')); }
+                let size = Math.random() * 5 + 10;
                 let color = '#ff4444';
-                let baseSpeed = Math.random() * 1.5 + 1.5;
+                let baseSpeed = Math.random() * 1.2 + 1.4;
                 let homingTurnSpeed = 0;
-                if (type === 'homing') { color = '#ffcc00'; baseSpeed = Math.random() * 0.4 + 1.7; size = 12; homingTurnSpeed = Math.random() * 0.022 + 0.016; }
-                else if (type === 'giant') { color = '#b533ff'; baseSpeed *= 0.45; size = Math.random() * 8 + 32; }
-                else if (type === 'bounce') { color = '#00ffff'; baseSpeed = Math.random() * 0.8 + 2.8; size = 16; }
+                if (type === 'homing') { color = '#ffcc00'; baseSpeed = Math.random() * 0.3 + 1.5; size = 11; homingTurnSpeed = Math.random() * 0.018 + 0.014; }
+                else if (type === 'giant') { color = '#b533ff'; baseSpeed *= 0.45; size = Math.random() * 6 + 30; }
+                else if (type === 'bounce') { color = '#00ffff'; baseSpeed = Math.random() * 0.6 + 2.5; size = 15; }
                 const edge = Math.floor(Math.random() * 4);
                 let x, y;
                 if (edge === 0) { x = Math.random() * canvas.width; y = -size * 2; }
@@ -308,7 +306,7 @@
             function spawnLaser() {
                 const isVertical = Math.random() > 0.5;
                 let position = isVertical ? Math.random() * (canvas.width - 200) + 100 : Math.random() * (canvas.height - 200) + 100;
-                lasers.push({ isVertical: isVertical, position: position, warningTime: 140, activeTime: 65, width: 32, timer: 0 });
+                lasers.push({ isVertical: isVertical, position: position, warningTime: 190, activeTime: 60, width: 32, timer: 0 });
             }
 
             function updatePlayer() {
@@ -350,7 +348,7 @@
 
             function checkLaserCollision(p, l) {
                 if (l.isVertical) { return (p.x + p.radius > l.position - l.width / 2 && p.x - p.radius < l.position + l.width / 2); }
-                else { return (p.y + p.radius > l.position - l.width / 2 && p.y - p.radius < l.position + l.width / 2); }
+                else { return (p.y + p.radius > l.position - l.width / 2 && p.y - l.radius < l.position + l.width / 2); }
             }
 
             function resetGame() {
@@ -375,7 +373,7 @@
                 else { let coinTicks = Math.floor(elapsed / 0.5); if (coinTicks > lastCoinTickTime) { totalCoins += (coinTicks - lastCoinTickTime); lastCoinTickTime = coinTicks; coinDisplay.innerText = totalCoins; } }
                 if (elapsed < 12) currentPhase = 1; else if (elapsed < 24) currentPhase = 2; else if (elapsed < 38) currentPhase = 3; else currentPhase = 4;
                 phaseElement.innerText = currentPhase;
-                let currentSpawnInterval = Math.max(160, enemySpawnInterval - (currentPhase - 1) * 110);
+                let currentSpawnInterval = Math.max(180, enemySpawnInterval - (currentPhase - 1) * 110);
                 updatePlayer();
                 for (let i = activeShockwaves.length - 1; i >= 0; i--) {
                     let sw = activeShockwaves[i]; sw.currentRadius += 14; sw.alpha -= 0.035;
@@ -391,7 +389,7 @@
                 if (!player.isInvincible || Math.floor(genTime() / 40) % 2 === 0) {
                     ctx.save(); ctx.shadowBlur = player.isInvincible ? 20 : 12; ctx.shadowColor = player.isDashing ? '#ffffff' : player.color; ctx.strokeStyle = player.isDashing ? '#ffffff' : player.color; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.arc(player.x, player.y, player.radius * 0.5, 0, Math.PI * 2); ctx.fillStyle = player.isDashing ? '#ffffff' : 'rgba(0, 255, 204, 0.7)'; ctx.fill(); ctx.restore();
                 }
-                if (currentPhase >= 3) { let laserCooldown = currentPhase === 3 ? 3000 : 2200; if (genTime() - lastLaserTime > laserCooldown) { spawnLaser(); lastLaserTime = genTime(); } }
+                if (currentPhase >= 3) { let laserCooldown = currentPhase === 3 ? 3200 : 2500; if (genTime() - lastLaserTime > laserCooldown) { spawnLaser(); lastLaserTime = genTime(); } }
                 for (let i = lasers.length - 1; i >= 0; i--) {
                     const l = lasers[i]; l.timer++;
                     if (l.timer < l.warningTime) {
